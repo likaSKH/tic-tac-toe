@@ -7,7 +7,7 @@ const Cell = (props) => {
     <AppContext.Consumer>
       {context => {
         const iconPasted = context.object[props.index]? context.object[props.index].value:null;
-        const icon = iconPasted !== null? iconPasted=='x'? <i className="fas fa-times"></i> : <i className="far fa-circle"></i>:'';
+        const icon = iconPasted !== null? iconPasted==1? <i className="fas fa-times"></i> : <i className="far fa-circle"></i>:'';
         return (
           <button onClick={()=>context.play(props.index)}>
               {icon}
@@ -22,9 +22,7 @@ class Board extends Component {
     static context = AppContext;
     constructor(props) {
         super(props);
-        this.state = {
-            object :{}
-        }
+        
     }
 
   componentDidUpdate() {
@@ -76,9 +74,45 @@ class Board extends Component {
 Board.contextType = AppContext;
 
 class Index extends Component {
+  
+  static context = AppContext;
+
+  constructor(props){
+    super(props);
+    this.state = {
+      form:{
+        height:null,
+        width:null,
+        length:null
+      }
+    }
+  }
+
+
+  onChangeFunction(val, e){
+    let form = {...this.state.form}
+    form[val] = e.target.value;
+    this.setState({form:form});
+  }
+
+  saveOptions(){
+    let form = {...this.state.form};
+    if(!form.height || !form.width || !form.length){
+      alert('ყველა ველის შევსება სავალდებულოა!');
+    }else{
+      this.context.setStateFromChild(this.state.form);
+    }
+  }
+
   render() {
     return (
       <div className="container">
+        <div className="form">
+            <input type='number' required name="height" placeholder="სირგძე" value={this.state.height} onChange={this.onChangeFunction.bind(this,'height')}/>
+            <input type='number' required name="width" placeholder="სიგანე"  value={this.state.width} onChange={this.onChangeFunction.bind(this,'width')} />
+            <input type='number' required name="length" placeholder="რამდენ მიმდევრობაში იგებს" value={this.state.length} onChange={this.onChangeFunction.bind(this,'length')}/>
+            <button type="submit" onClick={this.saveOptions.bind(this)}>შენახვა</button>
+        </div>
         <Board />
       </div>
     );

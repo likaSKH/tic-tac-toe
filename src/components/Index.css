@@ -19,3 +19,17 @@
     top: 10px;
     right: 10px;
 }
+
+.form{
+    margin-bottom:50px;
+}
+.form input{
+    margin:10px;
+}
+
+.form button{
+    width:100px;
+    height: auto;
+    color: white;
+    background-color: teal;
+}
