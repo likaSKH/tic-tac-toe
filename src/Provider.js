@@ -5,9 +5,9 @@ export const AppContext = React.createContext();
 
 export default class Provider extends Component {
 state = {
-    length : 4, //midevrobit ramdeni und asheivsos, rom gamarjvebuli gamovlindes
-    height :5, //sigrdze
-    width: 5,   //sigane
+    length : 3, //midevrobit ramdeni und asheivsos, rom gamarjvebuli gamovlindes
+    height :3, //sigrdze
+    width: 3,   //sigane
     startPlayer :0,
     object : [],
     coordsList :[],  
@@ -69,7 +69,7 @@ play = (index) => {
     if(!this.state.gameOver){
     let object = [...this.state.object];
     let player = this.state.startPlayer;
-    if(player>=(this.state.height*this.state.width)){
+    if((player+1)>=(this.state.height*this.state.width)){
         alert("თამაში დასრულდა ფრედ");
         this.clearAll();
     }
