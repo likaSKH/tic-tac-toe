@@ -185,7 +185,7 @@ clearAll(){
     for(let key in obj){
         obj[key].value = null;
     }
-    this.setState({object:obj,startPlayer:0, gameOver:false});
+    this.setState({object:obj,startPlayer:0, gameOver:false,coordsToColor:[]});
 }
 
 
