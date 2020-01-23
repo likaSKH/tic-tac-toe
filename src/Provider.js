@@ -11,13 +11,16 @@ state = {
     startPlayer :0,
     object : [],
     coordsList :[],  
+    gameOver:false,
     setInitialObject : (object)=>{
        this.settInitialObject(object); 
     },
     play: (index) => {
         this.play(index);
     },
-    
+    clearAll:()=>{
+        this.clearAll();
+    },
     orientations:{
         top:false,
         down:false,
@@ -28,12 +31,13 @@ state = {
         down_right:false,
         top_right:false,    
     },
-
-
+    coordsToColor:[],
     lastIndex:null,
     setStateFromChild:(stateFromChild)=>{
         this.setStateFromChild(stateFromChild);
-    } 
+    },
+
+
   }
 
 oppositeValues = {
@@ -62,6 +66,7 @@ settInitialObject = (object)=>{
 }
 
 play = (index) => {
+    if(!this.state.gameOver){
     let object = [...this.state.object];
     let player = this.state.startPlayer;
     if(player>=(this.state.height*this.state.width)){
@@ -81,7 +86,7 @@ play = (index) => {
     this.setState({startPlayer:player, object:object});
     this.checkWinner(index); 
     }
-
+    }
 }
 
 
@@ -89,12 +94,14 @@ checkWinner(index){
     this.setState({lastIndex:index},()=>{
         let orientations = this.cleanOrientations();
         this.setState({orientations:orientations},()=>{
-            let count = this.searchInTree(index, 1, null, false, orientations);
+            let coordinatesWhichWon = [];
+            let res = this.searchInTree(index, 1, null, false, orientations, coordinatesWhichWon);
+            let count = res? res[0]:'';
             if(count>=this.state.length){
                 let obj = [...this.state.object];
                 let player = obj[index].value==1?'X':"O";
                 alert("მოთამაშე "+player+"-მა მოიგო");
-                this.clearAll();
+                this.setState({coordsToColor:res[1], gameOver:true});
             }
         });
         
@@ -114,23 +121,28 @@ cleanOrientations(){
     }
 }
 
-searchInTree(index, count, orientation = null, reversed = false, orArr){
-    if(count >= this.state.length) return count;
+searchInTree(index, count, orientation = null, reversed = false, orArr, coordinatesWhichWon){
+    coordinatesWhichWon.push(index);
+    if(count >= this.state.length) return [count,coordinatesWhichWon];
     let neighbours = this.getIndexNeighboursOfSameValue(index);
     if(orientation){
 
-        if(reversed && !neighbours[orientation][0]){  return this.searchInTree(this.state.lastIndex, 1, null, false, this.cleanOrientations); }
+        if(reversed && !neighbours[orientation][0]){
+            return this.searchInTree(this.state.lastIndex, 1, null, false, this.cleanOrientations, coordinatesWhichWon); 
+        }
 
         if(neighbours[orientation][0]){
-            return this.searchInTree(neighbours[orientation][0].index,++count, orientation, reversed, orArr);
+            return this.searchInTree(neighbours[orientation][0].index,++count, orientation, reversed, orArr, coordinatesWhichWon);
         }else{
             let opposite = this.oppositeValues[orientation];
             if(reversed==true) {
-                return  this.searchInTree(this.state.lastIndex, 1, null, false, this.cleanOrientations);
+
+
+                return  this.searchInTree(this.state.lastIndex, 1, null, false, this.cleanOrientations,[]);
             }
             else{
                 orArr[opposite] = true;
-                return this.searchInTree(this.state.lastIndex, count, opposite, true, orArr);
+                return this.searchInTree(this.state.lastIndex, count, opposite, true, orArr, coordinatesWhichWon);
             }
         }
         
@@ -140,7 +152,7 @@ searchInTree(index, count, orientation = null, reversed = false, orArr){
         if(neighbours[key].length>0){
             if(!orArr[key]){
                 orArr[key] = true;
-                return this.searchInTree(neighbours[key][0].index,++count, key, false,orArr);
+                return this.searchInTree(neighbours[key][0].index,++count, key, false,orArr, coordinatesWhichWon);
             }
 
         }
@@ -173,7 +185,7 @@ clearAll(){
     for(let key in obj){
         obj[key].value = null;
     }
-    this.setState({object:obj,startPlayer:0});
+    this.setState({object:obj,startPlayer:0, gameOver:false});
 }
 
 

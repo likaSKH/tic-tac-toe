@@ -7,7 +7,8 @@ const Cell = (props) => {
     <AppContext.Consumer>
       {context => {
         const iconPasted = context.object[props.index]? context.object[props.index].value:null;
-        const icon = iconPasted !== null? iconPasted==1? <i className="fas fa-times"></i> : <i className="far fa-circle"></i>:'';
+        const color = (context.coordsToColor.filter(c=>c==props.index).length)?"red":"";
+      const icon  = iconPasted !== null? iconPasted==1? <i className={color+" fas fa-times"}></i> : <i className={color+" fas fa-circle"}></i>:'';
         return (
           <button onClick={()=>context.play(props.index)}>
               {icon}
@@ -104,6 +105,11 @@ class Index extends Component {
     }
   }
 
+  clear(){
+    this.context.clearAll();
+
+  }
+
   render() {
     return (
       <div className="container">
@@ -112,6 +118,7 @@ class Index extends Component {
             <input type='number' required name="width" placeholder="სიგანე"  value={this.state.width} onChange={this.onChangeFunction.bind(this,'width')} />
             <input type='number' required name="length" placeholder="რამდენ მიმდევრობაში იგებს" value={this.state.length} onChange={this.onChangeFunction.bind(this,'length')}/>
             <button type="submit" onClick={this.saveOptions.bind(this)}>შენახვა</button>
+            <button type="submit" onClick={this.clear.bind(this)}>გასუფთავება</button>
         </div>
         <Board />
       </div>
